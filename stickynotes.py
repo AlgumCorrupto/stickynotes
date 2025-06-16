@@ -11,7 +11,6 @@ Abrindo o programa pelo terminal, é possível oferecer como argumento o arquivo
 Esse é o ponto de entrada da aplicação, o programa começa ser executado desse arquivo
 """
 
-from visualização import Visualização
 from estadoDaAplicação import EstadoDaAplicação
 from pathlib import Path
 
