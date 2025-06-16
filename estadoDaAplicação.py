@@ -59,10 +59,10 @@ class EstadoDaAplicação(QApplication):
     def carregarArquivo(self, caminhoDoArquivo):
         if caminhoDoArquivo == "":
             self.éTemporário = True
-            self.arquivo = tempfile.TemporaryFile(mode='a+')
+            self.arquivo = tempfile.TemporaryFile(mode='r+')
         else:
             self.éTemporário = False
-            self.arquivo = open(caminhoDoArquivo, "a+")
+            self.arquivo = open(caminhoDoArquivo, "r+")
         self.arquivo.seek(0)
         self.conteúdoNaRAM = self.conteúdoNoHD = self.arquivo.read()
         self.janelaPrincipal.blocoDeNotas.setPlainText(self.conteúdoNaRAM)
@@ -73,9 +73,10 @@ class EstadoDaAplicação(QApplication):
     def abrirArquivo(self):
         self.janelaPrincipalAtiva = False
         caminhoDoArquivo, _ = QFileDialog.getOpenFileName(self.janelaPrincipal, "Abrir Arquivo", "Todos os Arquivos (*)")
-        if caminhoDoArquivo:
+        if len(caminhoDoArquivo) > 1:
             print(caminhoDoArquivo)
             self.arquivo.close()
+            self.éTemporário = False
             self.carregarArquivo(caminhoDoArquivo)
         self.janelaPrincipalAtiva = True
 
@@ -84,13 +85,15 @@ class EstadoDaAplicação(QApplication):
         if not self.éTemporário:
             self.arquivo.truncate(0)
             self.arquivo.seek(0)
+            print(self.conteúdoNaRAM)
             self.arquivo.write(self.conteúdoNaRAM)
+            self.arquivo.flush()
             self.conteúdoNoHD = self.conteúdoNaRAM
         # caso for arquivo temporário, cria uma caixa de diálogo para criação de um novo arquivo com o conteúdo digitado
         else:
             self.janelaPrincipalAtiva = False # variável não utilizada
             caminhoDoArquivo, _ = QFileDialog.getSaveFileName(self.janelaPrincipal, "Salvar Novo Arquivo", "Todos os Arquivos (*)")
-            if caminhoDoArquivo:
+            if len(caminhoDoArquivo) > 0:
                 self.éTemporário = False
                 self.arquivo.close()
                 with open(caminhoDoArquivo, "w") as f:
